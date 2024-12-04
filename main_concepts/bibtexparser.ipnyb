@@ -1,0 +1,33 @@
+!pip install bibtexparser
+import pandas as pd
+import bibtexparser
+
+
+from google.colab import files
+uploaded = files.upload()
+
+filename = list(uploaded.keys())[0]
+with open(filename, 'r') as f:
+  bib_database = bibtexparser.load(f)
+
+entries = bib_database.entries
+data = []
+
+for entry in entries:
+  data.append({
+      'Document Title': entry.get('title', ''),
+      'Authors': entry.get('author', ''),
+      'Year': entry.get('year', ''),
+      'Source Title': entry.get('journal', ''),
+      'DOI': entry.get('doi', ''),
+      'Abstract': entry.get('abstract', '')
+  })
+
+df = pd.DataFrame(data)
+
+print(df.head())
+
+output_filename = 'formatted_bibtex.xlsx'
+df.to_excel(output_filename, index=False)
+
+files.download(output_filename)
